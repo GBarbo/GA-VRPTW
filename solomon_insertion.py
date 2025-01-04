@@ -7,67 +7,11 @@
 
 from parsing import parse_file
 
-def calculate_distances(customers):
-	n = len(customers) - 1
-	d = []
-
-	for i in range(n + 1):
-		d.append([])
-		for j in range(n + 1):
-			dij = ((customers[i].x_coord - customers[j].x_coord)**2 + (customers[i].y_coord - customers[j].y_coord)**2)**(1/2)
-			d[i].append(dij)	
-
-	return d
-
-def begin_time(j, route, t, customers):
-    # Calculate the beggining of the service of j
-	# Returns whole route time if j is not in the route
-
-	time = customers[0].ready_time
-	for i in range(len(route)):
-		if i == 0:
-			time += t[0][route[i]]
-		else:
-			time += t[route[i - 1]][route[i]]
-		
-		# Add wait if not ready yet
-		time = max(customers[route[i]].ready_time, time)
-
-		if route[i] == j:
-			return time
-		
-		time += customers[route[i]].service_time
-
-	else:
-		time += t[route[len(route) - 1]][0]
-		return time	
-
-def check_time_windows(route, t, customers):
-	# Input: single route string, time matrix and customers
-	# Output: whether the route respect time windows
-	
-	time = customers[0].ready_time
-	for i in range(len(route)):
-		if i == 0:
-			time += t[0][route[i]]
-		else:
-			time += t[route[i - 1]][route[i]]
-
-		# Add wait if not ready yet, this way the ready time will always be feasible
-		time = max(customers[route[i]].ready_time, time)
-
-		# Check due date
-		if time > customers[route[i]].due_date:
-			return False
-		
-		time += customers[route[i]].service_time
-
-	# Check depot due date
-	time += t[route[i]][0]
-	if time > customers[0].due_date:
-		return False
-	
-	return True
+from vrptw_functions import calculate_distances
+from vrptw_functions import begin_time
+from vrptw_functions import check_time_windows
+from vrptw_functions import routes_distance
+from vrptw_functions import routes_time
 
 def c11(i, u, j, d, mu):
 	return d[i][u] + d[u][j] - mu * d[i][j]
@@ -99,7 +43,7 @@ def insertion(route, u, pair):
 
 def insertion_heuristic(d, t, problem, customers, i1_params, init_criterium):
 	# Input: distances and time matrices, problem data and list of customers (nodes)
-	# Output: feasible route to the VRPTW
+	# Output: feasible routes to the VRPTW
 
     mu, lam, alpha_1, alpha_2 = i1_params
 
@@ -162,27 +106,6 @@ def insertion_heuristic(d, t, problem, customers, i1_params, init_criterium):
             break
 
     return routes
-
-def routes_distance(routes, d):
-	total_distance = 0
-	for route in routes:
-		for i in range(len(route)):
-			if i == 0:
-				total_distance += d[0][route[i]]
-			else:
-				total_distance += d[route[i-1]][route[i]]
-
-			if i == len(route) - 1:
-				total_distance += d[route[i]][0]
-
-	return total_distance
-
-def routes_time(routes, t, customers):
-	total_time = 0
-	for route in routes:
-		total_time += begin_time(-1, route, t, customers)
-
-	return total_time
 
 def best_run(file_path):
 	# Run the eight Solomons configurations, return the best distance-wise
@@ -259,12 +182,18 @@ def main():
 	print(f'vehicles_used = {len(routes)}, total_distance = {routes_distance(routes, d)}, total_time = {routes_time(routes, d, customers)}')
 
 	# Run all instances
-	data_r = ("data/r101.txt","data/r102.txt","data/r103.txt","data/r104.txt","data/r105.txt","data/r106.txt","data/r107.txt","data/r108.txt","data/r109.txt","data/r110.txt","data/r111.txt","data/r112.txt")
-	data_c = ("data/c101.txt","data/c102.txt","data/c103.txt","data/c104.txt","data/c105.txt","data/c106.txt","data/c107.txt","data/c108.txt","data/c109.txt")
+	data_r1 = ("data/r101.txt", "data/r102.txt", "data/r103.txt", "data/r104.txt", "data/r105.txt","data/r106.txt", "data/r107.txt", "data/r108.txt", "data/r109.txt", "data/r110.txt","data/r111.txt", "data/r112.txt")
+	data_r2 = ("data/r201.txt", "data/r202.txt", "data/r203.txt", "data/r204.txt", "data/r205.txt","data/r206.txt", "data/r207.txt", "data/r208.txt", "data/r209.txt", "data/r210.txt","data/r211.txt")
+	data_c1 = ("data/c101.txt", "data/c102.txt", "data/c103.txt", "data/c104.txt", "data/c105.txt","data/c106.txt", "data/c107.txt", "data/c108.txt", "data/c109.txt")
+	data_c2 = ("data/c201.txt", "data/c202.txt", "data/c203.txt", "data/c204.txt", "data/c205.txt","data/c206.txt", "data/c207.txt", "data/c208.txt")
+	data_rc1 = ("data/rc101.txt", "data/rc102.txt", "data/rc103.txt", "data/rc104.txt", "data/rc105.txt","data/rc106.txt", "data/rc107.txt", "data/rc108.txt")
+	data_rc2 = ("data/rc201.txt", "data/rc202.txt", "data/rc203.txt", "data/rc204.txt", "data/rc205.txt","data/rc206.txt", "data/rc207.txt", "data/rc208.txt")
+
 	total_dist = 0
 	total_routes = 0
 	total_time = 0
-	data_x = data_r	# Select dataset
+	data_x = data_c2	# Select dataset
+	
 	def init_proc(i):
 		if i == 0:
 			return "farthest"

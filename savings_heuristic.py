@@ -1,5 +1,3 @@
-# %%
-
 # ==================================================
 # Solomon's Paralell Savings Heuristic for the VRPTW
 # Author: Giovanni Cesar Meira Barboza
@@ -10,7 +8,6 @@
 from parsing import parse_file
 
 from vrptw_functions import calculate_distances
-from vrptw_functions import begin_time
 from vrptw_functions import routes_distance
 from vrptw_functions import routes_time
 
@@ -152,7 +149,6 @@ def savings_heuristic(d, t, problem, customers, mu, maximum_wait):
 
     return routes
 
-# %%
 def main():
     # Example usage
     problem, customers = parse_file("data/r105.txt")
@@ -187,17 +183,17 @@ def main():
 
     
     # Run all instances
-    data_r = ("data/r101.txt","data/r102.txt","data/r103.txt","data/r104.txt","data/r105.txt","data/r106.txt","data/r107.txt","data/r108.txt","data/r109.txt","data/r110.txt","data/r111.txt","data/r112.txt")
-    data_c = ("data/c101.txt","data/c102.txt","data/c103.txt","data/c104.txt","data/c105.txt","data/c106.txt","data/c107.txt","data/c108.txt","data/c109.txt")
+    data_r1 = ("data/r101.txt", "data/r102.txt", "data/r103.txt", "data/r104.txt", "data/r105.txt","data/r106.txt", "data/r107.txt", "data/r108.txt", "data/r109.txt", "data/r110.txt","data/r111.txt", "data/r112.txt")
+    data_r2 = ("data/r201.txt", "data/r202.txt", "data/r203.txt", "data/r204.txt", "data/r205.txt","data/r206.txt", "data/r207.txt", "data/r208.txt", "data/r209.txt", "data/r210.txt","data/r211.txt")
+    data_c1 = ("data/c101.txt", "data/c102.txt", "data/c103.txt", "data/c104.txt", "data/c105.txt","data/c106.txt", "data/c107.txt", "data/c108.txt", "data/c109.txt")
+    data_c2 = ("data/c201.txt", "data/c202.txt", "data/c203.txt", "data/c204.txt", "data/c205.txt","data/c206.txt", "data/c207.txt", "data/c208.txt")
+    data_rc1 = ("data/rc101.txt", "data/rc102.txt", "data/rc103.txt", "data/rc104.txt", "data/rc105.txt","data/rc106.txt", "data/rc107.txt", "data/rc108.txt")
+    data_rc2 = ("data/rc201.txt", "data/rc202.txt", "data/rc203.txt", "data/rc204.txt", "data/rc205.txt","data/rc206.txt", "data/rc207.txt", "data/rc208.txt")
+
     total_dist = 0
     total_routes = 0
     total_time = 0
-    data_x = data_r	# Select dataset
-    def init_proc(i):
-        if i == 0:
-            return "farthest"
-        else:
-            return "earliest due-date"
+    data_x = data_r1	# Select dataset
         
     for data in data_x:
         solution = best_run(data)
@@ -210,9 +206,6 @@ def main():
     total_routes /= len(data_x)
     total_time /= len(data_x)
     print(f'\nAverage: distance = {total_dist}, number of routes =  {total_routes}, time = {total_time}')
-    
 
 if __name__ == "__main__":
 	main()
-
-# %%
